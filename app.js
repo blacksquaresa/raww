@@ -9,6 +9,12 @@ let num1 = document.getElementById('num1');
 let num2 = document.getElementById('num2');
 let equals = document.getElementById('equals');
 let answer = document.getElementById('answer');
-equals.onclick = () => {
-    answer.innerText = window.adder.add(Number(num1.value), Number(num2.value));
-}
+let worker = new Worker('worker.js');
+
+worker.addEventListener('message', function(e) {
+    answer.innerText = e.data;
+  }, false);
+
+equals.addEventListener('click', () => {
+    worker.postMessage({ x: Number(num1.value), y: Number(num2.value)});
+}, false);

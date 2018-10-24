@@ -1,32 +1,32 @@
-const $$$$: (...e: any[]) => Promise<void> = (e) => Promise.resolve();
 
-export function RunAsWebWorker(obj: any, param: string) {
-  if(!obj.hasOwnProperty(param)){
-    return;
-  };
-  const fn = obj[param];
-  if(typeof(fn) !== 'function')  {
-    return;
+type Func<T> = (...args: any[]) => Promise<T>;
+const $$$$: Func<void> = (e) => { return new Promise<void>(() => {}); };
+let counter = 1;
+
+export function RunAsWebWorker<T>(fn: Func<T>, name?: string): Func<T> {
+  if(fn == null || typeof(fn) !== 'function')  {
+    return fn;
   }
   const workerCode = () => {
     self.addEventListener("message",
       function(e) {
         $$$$(...e.data)
         .then((result) => {
-          self.postMessage(result, '*');
+          (self as any).postMessage(result);
         });
       },
       false
     );
   };
+  const checkedName = name || fn.name || `anonymous${counter++}`;
   const workerBlob = new Blob(    
-    [`function ${fn.toString()};`, "(", workerCode.toString().replace(/\$\$\$\$/, param.toString()), ")();"], 
+    [`function ${fn.toString()};`, "(", workerCode.toString().replace(/\$\$\$\$/, checkedName), ")();"], 
     { type: "text/javascript" }
   );
   let worker = new Worker(window.URL.createObjectURL(workerBlob));
 
-  const replaceFn = (...args: any[]) => {  
-    return new Promise((resolve, reject) => {
+  let replaceFunction = (...args: any[]) => {  
+    return new Promise<T>((resolve, reject) => {
       const act = (e: any) => {        
         worker.removeEventListener("message", act);
         resolve(e.data);
@@ -35,5 +35,5 @@ export function RunAsWebWorker(obj: any, param: string) {
       worker.postMessage(args);
    });
   }
-  obj[param] = replaceFn;
+  return replaceFunction;
 }

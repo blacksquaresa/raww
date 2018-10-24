@@ -1,7 +1,9 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // Require  html-webpack-plugin plugin
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: __dirname + "/src/app.js", // webpack entry point. Module to start building dependency graph
+  mode: 'development',
+  entry: __dirname + "/src/app.ts", // webpack entry point. Module to start building dependency graph
   output: {
     path: __dirname + '/dist', // Folder to store generated bundle
     filename: 'app.js',  // Name of generated bundle after build
@@ -25,6 +27,25 @@ module.exports = {
           inject: 'body'
       })
   ],
+  optimization: {
+    minimizer: [new UglifyJsPlugin(
+      {
+        uglifyOptions: {
+          warnings: false,
+          parse: {},
+          compress: {},
+          mangle: {
+            reserved: ['$$$$']
+          },
+          output: null,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_fnames: false,
+        }
+      }
+    )]
+  },
   devServer: {  // configuration for webpack-dev-server
       contentBase: './src',  //source of static assets
       port: 7700, // port to run dev-server

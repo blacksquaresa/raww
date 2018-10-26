@@ -3,10 +3,13 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: __dirname + "/src/app.ts", // webpack entry point. Module to start building dependency graph
+  entry: {
+    raww: __dirname + "/src/raww.ts",
+    demo: __dirname + "/src/demo.ts"
+  },
   output: {
-    path: __dirname + '/dist', // Folder to store generated bundle
-    filename: 'app.js',  // Name of generated bundle after build
+    path: __dirname + '/demo', // Folder to store generated bundle
+    filename: '[name].js',  // Name of generated bundle after build
     publicPath: '/' // public URL of the output directory when referenced in a browser
   },
   module: {

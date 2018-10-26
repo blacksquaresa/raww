@@ -27,15 +27,17 @@ const adder = new Adder();
 equals.addEventListener(
   "click",
   () => {
-    adder.add(Number(num1.value), Number(num2.value))
+    const number1 = Number(num1.value);
+    const number2 = Number(num2.value);
+    adder.add(number1, number2)
       .then((result) => {
-        answer.innerText = result.toString();
+        answer.innerText = `${number1} plus ${number2} equals ${result}`;
       }
     );
     
-    adder.sub(Number(num1.value), Number(num2.value), 2)
+    adder.sub(number1, number2, 2)
       .then((result) => {
-        answer2.innerText = result.toString();
+        answer2.innerText = `${number1} minus ${number2} minus 2 equals ${result}`;
       }
     )
   },

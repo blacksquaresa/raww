@@ -1,9 +1,13 @@
-
 type Func<T> = (...args: any[]) => Promise<T>;
 const $$$$: Func<void> = (e) => { return new Promise<void>(() => {}); };
 let counter = 1;
 
-export function RunAsWebWorker<T>(fn: Func<T>, name?: string): Func<T> {
+export function RunAsWebWorker(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
+  target[propertyKey] = raww(target[propertyKey], propertyKey);
+  return target;
+}
+
+export function raww<T>(fn: Func<T>, name?: string): Func<T> {
   if(fn == null || typeof(fn) !== 'function')  {
     return fn;
   }

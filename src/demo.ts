@@ -1,13 +1,15 @@
 "use strict";
-
 import { RunAsWebWorker } from './raww';
 
 class Adder {
+  @RunAsWebWorker
   add(x: number, y: number) {
     return new Promise((resolve, reject) => {
       resolve(Number(x) + Number(y));
     });
   }
+  
+  @RunAsWebWorker
   sub(x: number, y: number, z: number) {
     return new Promise((resolve, reject) => {
       resolve(Number(x) - Number(y)- z);
@@ -40,5 +42,5 @@ equals.addEventListener(
   false
 );
 
-adder.add = RunAsWebWorker(adder.add);
-adder.sub = RunAsWebWorker(adder.sub);
+// adder.add = RunAsWebWorker(adder.add);
+// adder.sub = RunAsWebWorker(adder.sub);

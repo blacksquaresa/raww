@@ -4,9 +4,9 @@
   "description": "Run pure functions as web workers",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
+    "build": "tsc -p ./tsconfig.prod.json",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --config webpack.dev.js --history-api-fallback --inline --progress"
+    "start": "webpack-dev-server --history-api-fallback --inline --progress"
   },
   "repository": {
     "type": "git",

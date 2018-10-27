@@ -1,4 +1,5 @@
 type Func<T> = (...args: any[]) => Promise<T>;
+type ResponseObject = { result?: any, error?: any };
 
 export function RunAsWebWorker(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
   target[propertyKey] = raww(target[propertyKey]);
@@ -14,7 +15,9 @@ export function raww<T>(fn: Func<T>): Func<T> {
       function(e) {
         $$$$(...e.data)
         .then((result) => {
-          (self as any).postMessage(result);
+          (self as any).postMessage({ result });
+        }, (err) => {
+          (self as any).postMessage({ error: err});
         });
       },
       false
@@ -31,11 +34,19 @@ export function raww<T>(fn: Func<T>): Func<T> {
 
   let replaceFunction = (...args: any[]) => {  
     return new Promise<T>((resolve, reject) => {
-      const act = (e: any) => {        
+      const act = (e: MessageEvent) => {        
         worker.removeEventListener("message", act);
-        resolve(e.data);
+        worker.removeEventListener("messageerror", err);
+        const result = e.data as ResponseObject;
+        result.result ? resolve(result.result) : reject(result.error);
+      };
+      const err = (e: Event) => {        
+        worker.removeEventListener("message", act);
+        worker.removeEventListener("messageerror", err);
+        reject('an unserialisable response has been received');
       }
       worker.addEventListener("message", act, false);
+      worker.addEventListener("messageerror", err, false);
       worker.postMessage(args);
    });
   }
@@ -44,5 +55,5 @@ export function raww<T>(fn: Func<T>): Func<T> {
 
 const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
-  return fnString.startsWith('(') || fnString.startsWith('function') ? fnString : `function ${fnString}`;
+  return fnString.startsWith('(') ? fnString : `function ${fnString}`;
 }

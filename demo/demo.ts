@@ -1,5 +1,5 @@
 "use strict";
-import { RunAsWebWorker } from './raww';
+import { RunAsWebWorker } from '../src/raww';
 
 class Adder {
   constructor(){
@@ -16,6 +16,13 @@ class Adder {
   sub = (x: number, y: number, z: number) => {
     return new Promise((resolve, reject) => {
       resolve(Number(x) - Number(y)- z);
+    });
+  }
+
+  @RunAsWebWorker
+  error(message: string) {
+    return new Promise((resolve, reject) => {
+      reject(message);
     });
   }
 }
@@ -42,7 +49,12 @@ equals.addEventListener(
       .then((result) => {
         answer2.innerText = `${number1} minus ${number2} minus 2 equals ${result}`;
       }
-    )
+    );
+
+    adder.error('testing an error')
+         .catch((reason: string) => {
+           console.log(reason);
+         });
   },
   false
 );

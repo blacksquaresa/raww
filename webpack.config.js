@@ -2,9 +2,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: __dirname + '/src/demo.ts',
+  entry: __dirname + '/demo/demo.ts',
   output: {
-    path: __dirname + '/demo', // Folder to store generated bundle
+    path: __dirname + '/web', // Folder to store generated bundle
     filename: 'demo.js'  // Name of generated bundle after build
   },
   module: {
@@ -12,7 +12,7 @@ module.exports = {
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules|test/
       }
     ]
   },
@@ -21,12 +21,12 @@ module.exports = {
   },
   plugins: [  // Array of plugins to apply to build chunk
       new HtmlWebpackPlugin({
-          template: __dirname + "/src/index.html",
+          template: __dirname + "/demo/index.html",
           inject: 'body'
       })
   ],
   devServer: {  // configuration for webpack-dev-server
-      contentBase: './demo',  //source of static assets
+      contentBase: './web',  //source of static assets
       port: 7700, // port to run dev-server
   } 
 };

@@ -2,6 +2,10 @@
 import { RunAsWebWorker } from './raww';
 
 class Adder {
+  constructor(){
+    RunAsWebWorker(this, 'sub', {});
+  }
+
   @RunAsWebWorker
   add(x: number, y: number) {
     return new Promise((resolve, reject) => {
@@ -9,8 +13,7 @@ class Adder {
     });
   }
   
-  @RunAsWebWorker
-  sub(x: number, y: number, z: number) {
+  sub = (x: number, y: number, z: number) => {
     return new Promise((resolve, reject) => {
       resolve(Number(x) - Number(y)- z);
     });

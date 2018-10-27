@@ -1,13 +1,11 @@
 type Func<T> = (...args: any[]) => Promise<T>;
-const $$$$: Func<void> = (e) => { return new Promise<void>(() => {}); };
-let counter = 1;
 
 export function RunAsWebWorker(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
-  target[propertyKey] = raww(target[propertyKey], propertyKey);
+  target[propertyKey] = raww(target[propertyKey]);
   return target;
 }
 
-export function raww<T>(fn: Func<T>, name?: string): Func<T> {
+export function raww<T>(fn: Func<T>): Func<T> {
   if(fn == null || typeof(fn) !== 'function')  {
     return fn;
   }
@@ -22,9 +20,11 @@ export function raww<T>(fn: Func<T>, name?: string): Func<T> {
       false
     );
   };
-  const checkedName = name || fn.name || `anonymous${counter++}`;
+  function $$$$(...data: any[]): Promise<T> {
+    return (fn).call({}, ...data);
+  }
   const workerBlob = new Blob(    
-    [`function ${fn.toString()};`, "(", workerCode.toString().replace(/\$\$\$\$/, checkedName), ")();"], 
+    [`${$$$$.toString().replace('fn', functionToString(fn))};`, "(", workerCode.toString(), ")();"], 
     { type: "text/javascript" }
   );
   let worker = new Worker(window.URL.createObjectURL(workerBlob));
@@ -40,4 +40,9 @@ export function raww<T>(fn: Func<T>, name?: string): Func<T> {
    });
   }
   return replaceFunction;
+}
+
+const functionToString = (fn: Function): string => {
+  const fnString = fn.toString();
+  return fnString.startsWith('(') || fnString.startsWith('function') ? fnString : `function ${fnString}`;
 }

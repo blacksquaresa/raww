@@ -55,5 +55,5 @@ export function raww<T>(fn: Func<T>): Func<T> {
 
 const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
-  return fnString.startsWith('(') ? fnString : `function ${fnString}`;
+  return fnString.startsWith('(') || fnString.startsWith('function') ? fnString : `function ${fnString}`;
 }

@@ -8,16 +8,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Tests",
-      "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
-      "args": [
-          "${relativeFile}"
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand"
       ],
-      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      }
+      "port": 9229
     }
   ]
 }

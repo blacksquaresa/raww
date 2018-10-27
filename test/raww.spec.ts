@@ -5,22 +5,26 @@ describe("#raww", () => {
     function testFn(e: any) { return new Promise<void>(() => {}); };
     const result = raww(testFn);
     expect(result).not.toBe(testFn);
+    expect(() => { result();}).not.toThrow();
   });  
   
   it('returns a new function from a traditional anonymous function', () => {
     const result = raww(function (e: any) { return new Promise<void>(() => {}); });
     expect(result).toBeInstanceOf(Function);
+    expect(() => { result();}).not.toThrow();
   });
 
   it('returns a new function from a named arrow function', () => {
     const testFn = (e: any) => { return new Promise<void>(() => {}); };
     const result = raww(testFn);
     expect(result).not.toBe(testFn);
+    expect(() => { result();}).not.toThrow();
   });  
   
   it('returns a new function from an anonymous arrow function', () => {
     const result = raww((e: any) => { return new Promise<void>(() => {}); });
     expect(result).toBeInstanceOf(Function);
+    expect(() => { result();}).not.toThrow();
   });  
 }); 
 

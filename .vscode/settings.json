@@ -1,6 +1,3 @@
 {
-  "git.ignoreLimitWarning": true,
-  "javascript.autoClosingTags": false,
-  "html.autoClosingTags": false,
-  "html.format.enable": false
+  "git.ignoreLimitWarning": true
 }

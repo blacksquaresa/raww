@@ -58,6 +58,3 @@ equals.addEventListener(
   },
   false
 );
-
-// adder.add = RunAsWebWorker(adder.add);
-// adder.sub = RunAsWebWorker(adder.sub);

@@ -1,7 +1,7 @@
 # Run as Web Worker
 Run a pure function as a web worker. 
 
-This library will provide a method that hoists your function into a web worker, and returns a new function, with the same signature, that you can use to call it. You can use the new function interchangably with the ortiginal in your code.
+This library will provide a method that hoists your function into a web worker, and returns a new function, with the same signature, that you can use to call it. You can use the new function interchangeably with the original in your code.
 
 For TypeScript users we also include a decorator you can use to decorate a class method to run it in a web worker. Everything else about your code can run exactly the same way.  
 

@@ -7,8 +7,8 @@ For TypeScript users we also include a decorator you can use to decorate a class
 
 There are some rules:
 
-* The method cannot reference any variables outside its own scope, including the window object, the ```this``` keyword and any properties or methods of the containing class or object.
-* The method must return a Promise (or, technically, a Thenable object). All requests to web workers are asynchronous, so your method must be asynchronous too. 
+* The method cannot reference any variables outside its own scope, including the ```window``` object, the ```this``` keyword and any properties or methods of the containing class or object.
+* The method must return a Promise (or, technically, a Thenable object). All communication with web workers is asynchronous, so your method must be asynchronous too. 
 * All parameters passed into the method must be serialisable to a string. 
 * Any parameters passed in by reference will lose their reference. You cannot make changes to these objects and expect those changes to persist outside of the function.
 
@@ -16,7 +16,7 @@ There are some rules:
 
 Using npm:
 ``` 
-npm install run-as-web=worker
+npm install run-as-web-worker
 ```
 Using yarn:
 ```
@@ -64,7 +64,6 @@ You can do the same thing inline:
 ``` javascript
 import { raww } from 'run-as-web-worker';
 const myObject = {
-    someProp: 'some property',
     myFunc: raww(() => {
         return new Promise((resolve, reject) => {
             resolve('all done');
@@ -100,8 +99,6 @@ If you use TypeScript, we have a decorator you can use:
 ``` typescript
 import { RunAsWebWorker } from 'run-as-web-worker';
 class myClass {
-    public someProp: string =  'some property';
-
     @RunAsWebWorker
     public myFunc(): Promise<string> {
         return new Promise((resolve: Function, reject: Function) => {

@@ -32,7 +32,7 @@ describe("#RunAsWebWorker", () => {
   it('replaces a function with a new one returned from raww', () => {
     const testFn = (e: any) => { return new Promise<void>(() => {}); };
     const tester = { testFn };
-    const result = RunAsWebWorker(tester, 'testFn', {});
+    const result = RunAsWebWorker()(tester, 'testFn', {});
     expect(result).toBe(tester);
     expect(result.testFn).not.toBe(testFn);
   });  

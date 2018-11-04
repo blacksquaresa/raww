@@ -1,15 +1,33 @@
 type Func<T> = (...args: any[]) => Promise<T>;
 type ResponseObject = { result?: any, error?: any };
+type DependencyMap = { [key:string]: any };
+interface Dependency{ 
+  name: string;
+  dependency: any;
+};
 
-export function RunAsWebWorker(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
-  target[propertyKey] = raww(target[propertyKey]);
-  return target;
+export function RunAsWebWorker(...dependencies: DependencyMap[]): any {
+  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
+    target[propertyKey] = raww(target[propertyKey], ...dependencies);
+    return target;
+  }
 }
 
-export function raww<T>(fn: Func<T>): Func<T> {
+export function raww<T>(fn: Func<T>, ...dependencies: DependencyMap[]): Func<T> {
   if(fn == null || typeof(fn) !== 'function')  {
     return fn;
   }
+
+  const dependencyBlobs: string[] = dependencies.reduce<Dependency[]>((arr, map) => {
+      for (const entry in map) {
+        arr.push({ name: entry, dependency: map[entry] })
+      }
+      return arr;
+    }, [])
+    .map((dependency) => getDependencyConstructor(dependency))
+    .filter((v) => v !== null)
+    .map((str) => str + '\r\n');
+
   const workerCode = () => {
     self.addEventListener("message",
       function(e) {
@@ -26,8 +44,8 @@ export function raww<T>(fn: Func<T>): Func<T> {
   function $$$$(...data: any[]): Promise<T> {
     return (fn).call({}, ...data);
   }
-  const workerBlob = new Blob(    
-    [`${$$$$.toString().replace('fn', functionToString(fn))};`, "(", workerCode.toString(), ")();"], 
+  const workerBlob = new Blob(
+    dependencyBlobs.concat([`${$$$$.toString().replace('fn', functionToString(fn))};`, "(", workerCode.toString(), ")();"]), 
     { type: "text/javascript" }
   );
   let worker = new Worker(window.URL.createObjectURL(workerBlob));
@@ -55,5 +73,28 @@ export function raww<T>(fn: Func<T>): Func<T> {
 
 const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
+  if(!fnString || fnString.length === 0){
+    return '()=>{}';
+  }
   return fnString.startsWith('(') || fnString.startsWith('function') ? fnString : `function ${fnString}`;
+}
+
+const getDependencyConstructor = (dependency: Dependency): string => {
+  if(dependency === null || dependency === undefined){
+    return '';
+  }
+
+  switch(typeof(dependency.dependency)){
+    case 'string':
+      return `const ${dependency.name} = '${dependency.dependency}';`;
+    case 'number':
+      return `const ${dependency.name} = ${dependency.dependency};`;
+    case 'boolean':
+      return `const ${dependency.name} = !!${dependency.dependency?1:0};`;
+    case 'function':
+      return `const ${dependency.name} = ${functionToString(dependency.dependency)};`;
+    default:
+      return '';
+
+  }
 }

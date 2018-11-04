@@ -1,15 +1,21 @@
 "use strict";
 import { RunAsWebWorker } from '../src/raww';
+import * as _ from 'lodash';
+
+const func1 = () => { console.log('Function 1'); };
+const func2 = function () { console.log('Function 2'); };
+function func3(){ console.log('Function 3'); }
 
 class Adder {
   constructor(){
-    RunAsWebWorker(this, 'sub', {});
+    RunAsWebWorker()(this, 'sub', {});
   }
 
-  @RunAsWebWorker
+  @RunAsWebWorker({ myString: 'myString', myNumber: 42, myBool: true }, { func1, func2, func3 }, {_})
   add(x: number, y: number) {
     return new Promise((resolve, reject) => {
-      resolve(Number(x) + Number(y));
+      const result = _.reduce([x, y],(t:number, x:number) => t+x, 0);
+      resolve(result);
     });
   }
   
@@ -19,7 +25,7 @@ class Adder {
     });
   }
 
-  @RunAsWebWorker
+  @RunAsWebWorker()
   error(message: string) {
     return new Promise((resolve, reject) => {
       reject(message);

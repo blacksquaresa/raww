@@ -24,6 +24,7 @@
   "homepage": "https://github.com/blacksquaresa/raww#readme",
   "devDependencies": {
     "@types/jest": "^23.3.7",
+    "@types/lodash": "^4.14.117",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^23.6.0",
     "jsdom-worker": "^0.1.0",
@@ -41,5 +42,8 @@
     "setupFiles": [
       "jsdom-worker"
     ]
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
   }
 }

@@ -11,7 +11,7 @@ class Adder {
     RunAsWebWorker()(this, 'sub', {});
   }
 
-  @RunAsWebWorker({ myString: 'myString', myNumber: 42, myBool: true }, { func1, func2, func3 }, {_})
+  @RunAsWebWorker({ myString: 'myString', myNumber: 42, myBool: true }, { func1, func2, func3 }, {$_: 'node_modules/lodash/index.js'})
   add(x: number, y: number) {
     return new Promise((resolve, reject) => {
       const result = _.reduce([x, y],(t:number, x:number) => t+x, 0);

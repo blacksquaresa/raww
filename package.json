@@ -41,6 +41,9 @@
     "testEnvironment": "jsdom",
     "setupFiles": [
       "jsdom-worker"
+    ],
+    "roots": [
+      "<rootDir>/test"
     ]
   },
   "dependencies": {

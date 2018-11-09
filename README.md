@@ -112,3 +112,68 @@ instance.myFunc().then((result: string) => {
     console.log(result);
 });
 ```
+## Dependencies
+It is also possible to pass some global dependencies into the web worker when it is created. This can only be done when the worker is created, and not when the function is actually called. Again, there are some rules to this:
+
+- primitives can be passed without a problem (strings, numbers and booleans).
+- objects can be passed if they do not contain cyclic dependencies, or any other invalid configuration.
+- functions can be passed if they do not overwrite the toString method. 
+- if a function has properties, they will not be passed.
+- if a function has references to any object that is not also included as a dependency, it will fail.
+- objects that contain primitives, other objects and functions can be passed.
+- as with the main function, any references any of the objects or functions had will be broken; the objects and functions are serialised into strings for transfer, and cannot maintain references across boundaries. 
+- always make sure your bundler does not modify the names of the dependencies you're adding; you'll name them when you pass them, and that naming won't be updated by the bundler.
+
+You include your dependencies by adding one or more objects as additional parameters to the ```raww``` method or the decorator:
+
+``` javascript
+import { raww } from 'run-as-web-worker';
+const name = "name";
+const utils = {
+  clog: (message) => {
+    console.log(message);
+  }
+}
+
+function myFunc(){
+  return new Promise((resolve, reject) => {
+    utils.clog(name);
+    resolve('all done');
+  });
+}
+
+const myFuncInWebWorker = raww(myFunc, { name, utils });
+
+myFuncInWebWorker().then((result) => {
+  console.log(result);
+});
+```
+
+This will load the two dependencies in no particular order. If the order is important, provide multiple objects. All the dependencies from the first object will be loaded first, then all those from the second, and so on...
+
+``` javascript
+import { raww } from 'run-as-web-worker';
+const name = "name";
+const utils = {
+  thisName: name,
+  clog: (message) => {
+    console.log(`${name}: ${message}`);
+  }
+}
+
+function myFunc(){
+  return new Promise((resolve, reject) => {
+    utils.clog('a message');
+    resolve('all done');
+  });
+}
+
+const myFuncInWebWorker = raww(myFunc, { name }, { utils });
+
+myFuncInWebWorker().then((result) => {
+  console.log(result);
+});
+```
+### Notes
+
+It is not currently possible for Web Workers to import modules using the ```import``` keyword, but we have reserved a mechanism for doing this, when it becomes available: any dependency whose name begins with a "$" will be assumed to be a url, which should be used as the path for the ```import``` function. 

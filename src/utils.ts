@@ -44,7 +44,7 @@ export const importsSorter = (a: string, b: string) => {
 
 export const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
-  if (!fnString || fnString.length === 0) {
+  if (typeof(fn) !== 'function' || !fnString || fnString.length === 0) {
     return "()=>{}";
   }
   return fnString.startsWith("(") || fnString.startsWith("function")
@@ -53,20 +53,23 @@ export const functionToString = (fn: Function): string => {
 };
 
 export const objectToString = (obj: IndexedObject): string => {
+  if(typeof(obj) === 'function'){
+    return functionToString(obj);
+  }
+
   const mapResult = objectFunctionMapper(obj, 1);
 
-  let result = JSON.stringify(obj);
+  let result = JSON.stringify(mapResult.source);
   for (const entry of mapResult.map) {
     result = result.replace(`"${entry[0]}"`, entry[1]);
   }
   return result;
 };
 
-export const objectFunctionMapper = (obj: IndexedObject, counter: number): OFMResult => {
+const objectFunctionMapper = (obj: IndexedObject, counter: number): OFMResult => {
   let map = new Map<string, string>();
   
   for (const prop in obj) {
-    const element = obj[prop];
     switch (typeof obj[prop]) {
       case "function":
         const key = `$$Function${counter++}$$`;

@@ -52,6 +52,7 @@ export function raww<T>(fn: Func<T>, ...dependencies: IndexedObject[]): Func<T> 
   };
 
   function $$$$(...data: any[]): Promise<T> {
+    // prettier-ignore
     return (fn).call({}, ...data);
   }
 

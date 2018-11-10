@@ -1,5 +1,5 @@
 import { Dependency } from './types';
-import { functionToString, getDependencyConstructor, importsSorter } from './utils';
+import { functionToString, getDependencyConstructor } from './utils';
 
 export type Func<T> = (...args: any[]) => Promise<T>;
 type ResponseObject = { result?: any; error?: any };
@@ -34,7 +34,6 @@ export function raww<T>(fn: Func<T>, ...dependencies: { [key: string]: any }[]):
     }, [])
     .map(getDependencyConstructor)
     .filter(v => v !== null)
-    .sort(importsSorter)
     .map(str => str + "\r\n");
 
   const workerCode = () => {

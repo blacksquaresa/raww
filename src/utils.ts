@@ -7,15 +7,6 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
     return "";
   }
 
-  if (dependency.name[0] === "$") {
-    const actualName = dependency.name.substr(1);
-    const impt =
-      typeof dependency.dependency === "string"
-        ? { source: dependency.dependency }
-        : dependency.dependency;
-    return `console.warn('Module imports are not yet supported by browsers');`;
-  }
-
   switch (typeof dependency.dependency) {
     case "string":
       return `const ${dependency.name} = '${dependency.dependency}';`;
@@ -34,14 +25,6 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
     default:
       return "";
   }
-};
-
-export const importsSorter = (a: string, b: string) => {
-  const starter = "console.warn";
-  return (
-    Number(b.substr(0, starter.length) === starter) -
-    Number(a.substr(0, starter.length) === starter)
-  );
 };
 
 export const functionToString = (fn: Function): string => {

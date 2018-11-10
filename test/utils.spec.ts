@@ -1,4 +1,4 @@
-import { functionToString, getDependencyConstructor, importsSorter, objectToString } from '../src/utils';
+import { functionToString, getDependencyConstructor, objectToString } from '../src/utils';
 
 describe("#getDependencyConstructor", () => {
   it('returns correct constructor string for a string dependency', () => {
@@ -26,28 +26,6 @@ describe("#getDependencyConstructor", () => {
     const myfunc = function() { console.log('my func'); };
     const result = getDependencyConstructor({ name:'myname', dependency: myfunc });
     expect(result).toBe("const myname = function () { console.log('my func'); };");
-  });
-});
-
-describe("#importsSorter", () => {
-  it('returns 0 for two unrelated strings', () => {
-    const result = importsSorter('myname', 'my dependency');
-    expect(result).toBe(0);
-  });
-
-  it('returns -1 for first match string', () => {
-    const result = importsSorter('console.warn("something")', 'my dependency');
-    expect(result).toBe(-1);
-  });
-
-  it('returns 1 for second match string', () => {
-    const result = importsSorter('my dependency', 'console.warn("something")');
-    expect(result).toBe(1);
-  });
-
-  it('returns 0 for both matching strings', () => {
-    const result = importsSorter('console.warn("another thing")', 'console.warn("something")');
-    expect(result).toBe(0);
   });
 });
 

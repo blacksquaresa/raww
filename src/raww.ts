@@ -1,5 +1,5 @@
-import { Dependency } from './types';
-import { functionToString, getDependencyConstructor } from './utils';
+import { Dependency } from "./types";
+import { functionToString, getDependencyConstructor } from "./utils";
 
 export type Func<T> = (...args: any[]) => Promise<T>;
 type ResponseObject = { result?: any; error?: any };
@@ -20,7 +20,10 @@ export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
   };
 }
 
-export function raww<T>(fn: Func<T>, ...dependencies: { [key: string]: any }[]): Func<T> {
+export function raww<T>(
+  fn: Func<T>,
+  ...dependencies: { [key: string]: any }[]
+): Func<T> {
   if (fn == null || typeof fn !== "function") {
     return fn;
   }

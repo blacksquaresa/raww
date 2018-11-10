@@ -1,6 +1,7 @@
-import { Dependency } from './types';
+import { Dependency } from "./types";
 
-type OFMResult = { source: { [key: string]: any }, map: Map<string, string>, counter: number};
+let counter = 1;
+let functionMap = new Map<string, string>();
 
 export const getDependencyConstructor = (dependency: Dependency): string => {
   if (dependency === null || dependency === undefined) {
@@ -29,7 +30,7 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
 
 export const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
-  if (typeof(fn) !== 'function' || !fnString || fnString.length === 0) {
+  if (typeof fn !== "function" || !fnString || fnString.length === 0) {
     return "()=>{}";
   }
   return fnString.startsWith("(") || fnString.startsWith("function")
@@ -38,37 +39,45 @@ export const functionToString = (fn: Function): string => {
 };
 
 export const objectToString = (obj: { [key: string]: any }): string => {
-  if(typeof(obj) === 'function'){
+  if (typeof obj === "function") {
     return functionToString(obj);
   }
+  
+  if (typeof obj !== "object") {
+    return JSON.stringify(obj);
+  }
 
-  const mapResult = objectFunctionMapper(obj, 1);
+  const mapResult = objectFunctionMapper(obj);
 
-  let result = JSON.stringify(mapResult.source);
-  for (const entry of mapResult.map) {
-    result = result.replace(`"${entry[0]}"`, entry[1]);
+  let result = JSON.stringify(mapResult);
+  for (const entry of functionMap) {
+    result = result.replace(
+      new RegExp(`"${entry[0].replace(/\$/g, "\\$")}"`, "g"),
+      entry[1]
+    );
   }
   return result;
 };
 
-const objectFunctionMapper = (obj: { [key: string]: any }, counter: number): OFMResult => {
-  let map = new Map<string, string>();
-  
+const objectFunctionMapper = (obj: {
+  [key: string]: any;
+}): { [key: string]: any } => {
+  const working: { [key: string]: any } = {};
   for (const prop in obj) {
     switch (typeof obj[prop]) {
       case "function":
         const key = `$$Function${counter++}$$`;
-        map.set(key, obj[prop].toString());
-        obj[prop] = key;
+        functionMap.set(key, obj[prop].toString());
+        working[prop] = key;
         break;
       case "object":
-        const childObject = objectFunctionMapper(obj[prop], counter);
-        counter = childObject.counter;
-        obj[prop] = childObject.source;
-        map = new Map([...map, ...childObject.map]);
+        const childObject = objectFunctionMapper(obj[prop]);
+        working[prop] = childObject;
         break;
+      default:
+        working[prop] = obj[prop];
     }
   }
 
-  return { source: obj, map: map, counter: counter};
-}
+  return working;
+};

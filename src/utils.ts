@@ -1,4 +1,6 @@
-import { Dependency, IndexedObject, OFMResult } from './types';
+import { Dependency } from './types';
+
+type OFMResult = { source: { [key: string]: any }, map: Map<string, string>, counter: number};
 
 export const getDependencyConstructor = (dependency: Dependency): string => {
   if (dependency === null || dependency === undefined) {
@@ -52,7 +54,7 @@ export const functionToString = (fn: Function): string => {
     : `function ${fnString}`;
 };
 
-export const objectToString = (obj: IndexedObject): string => {
+export const objectToString = (obj: { [key: string]: any }): string => {
   if(typeof(obj) === 'function'){
     return functionToString(obj);
   }
@@ -66,7 +68,7 @@ export const objectToString = (obj: IndexedObject): string => {
   return result;
 };
 
-const objectFunctionMapper = (obj: IndexedObject, counter: number): OFMResult => {
+const objectFunctionMapper = (obj: { [key: string]: any }, counter: number): OFMResult => {
   let map = new Map<string, string>();
   
   for (const prop in obj) {

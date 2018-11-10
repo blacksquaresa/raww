@@ -1,9 +1,13 @@
 
 node_modules/
-
+demo/
+src/
+test/
+web/
 *.lock
-
 package-lock\.json
-
 npm-debug.log
+tsconfig*
+webpack*
+.vscode/
 

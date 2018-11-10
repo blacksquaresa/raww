@@ -1,12 +1,15 @@
-import { Dependency, Func, IndexedObject, ResponseObject } from './types';
+import { Dependency } from './types';
 import { functionToString, getDependencyConstructor, importsSorter } from './utils';
+
+export type Func<T> = (...args: any[]) => Promise<T>;
+type ResponseObject = { result?: any; error?: any };
 
 declare var Worker: {
   prototype: Worker;
   new (stringUrl: string, options: {}): Worker;
 };
 
-export function RunAsWebWorker(...dependencies: IndexedObject[]): any {
+export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
   return function(
     target: any,
     propertyKey: string,
@@ -17,7 +20,7 @@ export function RunAsWebWorker(...dependencies: IndexedObject[]): any {
   };
 }
 
-export function raww<T>(fn: Func<T>, ...dependencies: IndexedObject[]): Func<T> {
+export function raww<T>(fn: Func<T>, ...dependencies: { [key: string]: any }[]): Func<T> {
   if (fn == null || typeof fn !== "function") {
     return fn;
   }

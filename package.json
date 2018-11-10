@@ -1,6 +1,6 @@
 {
   "name": "run-as-web-worker",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Run pure functions as web workers",
   "main": "./lib/raww.js",
   "types": "./lib/raww.d.ts",
@@ -47,6 +47,5 @@
     ]
   },
   "dependencies": {
-    "lodash": "^4.17.11"
   }
 }

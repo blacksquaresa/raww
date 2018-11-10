@@ -174,6 +174,17 @@ myFuncInWebWorker().then((result) => {
   console.log(result);
 });
 ```
-### Notes
+## Notes
 
-It is not currently possible for Web Workers to import modules using the ```import``` keyword, but we have reserved a mechanism for doing this, when it becomes available: any dependency whose name begins with a "$" will be assumed to be a url, which should be used as the path for the ```import``` function. 
+It is not currently possible for Web Workers to import modules using the `import` keyword, but we have have plans for a mechanism for doing this, when it becomes available: any dependency whose name begins with a "$" will be assumed to be a url, which should be used as the path for the `import` function. 
+
+We have decided not to make use of the [importScripts](https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts) method to import scripts:
+- The general use case for importing scripts is to import third party libraries for use in your code. These libraries are generally not designed to be loaded as stand-alone scripts, without a way to assign them to a scoped variable (eg: you can import lodash with `importScript`, but it will not be assigned to the ```_``` global variable, or to anything you have access to).
+- Most libraries are designed to either be imported directly using a module loader (es6, systemjs, etc) or, more commonly, be bundled into a build (eg: webpack), which wraps the library in a closure such that it is not available outside that closure.  
+- Using the `importScript` method requires that the script imported be pre-prepared for exactly this import case, and not for any of the cases above. If you do that, you can probably just create a whole webworker out of it - you don't need this library.
+
+Unfortunately, the following libraries are known not to work with `run-as-web-worker`, until such time as we can import them using es6 imports:
+
+Library | Reason
+--- | ---
+[lodash](https://lodash.com/) | There are two reasons why lodash does not work with this system. Firstly, lodash surfaces as a function which has properties. This allows you to use: `_()` or `_.map()`. The serialisation in `run-as-web-worker` does not include the properties of functions - when it finds a function, it serialises and adds it, then moves on. Secondly, `run-as-web-worker` serialises functions using the `toString` method of the function. `lodash` has overridden the toString method of it's root function to provide an empty string, essentially deliberately preventing serialisation. Without that `toString` method, `run-as-web-worker` cannot serialise the function, and can therefore not recreate it in the web worker.

@@ -7,7 +7,7 @@ For TypeScript users we also include a decorator you can use to decorate a class
 
 There are some rules:
 
-* The method cannot reference any variables outside its own scope, including the ```window``` object, the ```this``` keyword and any properties or methods of the containing class or object.
+* The method cannot reference any variables outside its own scope, including the `window` object, the `this` keyword and any properties or methods of the containing class or object.
 * The method must return a Promise (or, technically, a Thenable object). All communication with web workers is asynchronous, so your method must be asynchronous too. 
 * All parameters passed into the method must be serialisable to a string. 
 * Any parameters passed in by reference will lose their reference. You cannot make changes to these objects and expect those changes to persist outside of the function.
@@ -124,7 +124,7 @@ It is also possible to pass some global dependencies into the web worker when it
 - as with the main function, any references any of the objects or functions had will be broken; the objects and functions are serialised into strings for transfer, and cannot maintain references across boundaries. 
 - always make sure your bundler does not modify the names of the dependencies you're adding; you'll name them when you pass them, and that naming won't be updated by the bundler.
 
-You include your dependencies by adding one or more objects as additional parameters to the ```raww``` method or the decorator:
+You include your dependencies by adding one or more objects as additional parameters to the `raww` method or the decorator:
 
 ``` javascript
 import { raww } from 'run-as-web-worker';

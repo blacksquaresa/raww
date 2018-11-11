@@ -10,17 +10,17 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
 
   switch (typeof dependency.dependency) {
     case "string":
-      return `const ${dependency.name} = '${dependency.dependency}';`;
+      return `var ${dependency.name} = '${dependency.dependency}';`;
     case "number":
-      return `const ${dependency.name} = ${dependency.dependency};`;
+      return `var ${dependency.name} = ${dependency.dependency};`;
     case "boolean":
-      return `const ${dependency.name} = !!${dependency.dependency ? 1 : 0};`;
+      return `var ${dependency.name} = !!${dependency.dependency ? 1 : 0};`;
     case "function":
-      return `const ${dependency.name} = ${functionToString(
+      return `var ${dependency.name} = ${functionToString(
         dependency.dependency
       )};`;
     case "object":
-      return `const ${dependency.name} = ${objectToString(
+      return `var ${dependency.name} = ${objectToString(
         dependency.dependency
       )};`;
     default:
@@ -31,7 +31,7 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
 export const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
   if (typeof fn !== "function" || !fnString || fnString.length === 0) {
-    return "()=>{}";
+    return "function(){}";
   }
   return fnString.startsWith("(") || fnString.startsWith("function")
     ? fnString
@@ -59,9 +59,7 @@ export const objectToString = (obj: { [key: string]: any }): string => {
   return result;
 };
 
-const objectFunctionMapper = (obj: {
-  [key: string]: any;
-}): { [key: string]: any } => {
+const objectFunctionMapper = (obj: { [key: string]: any; }): { [key: string]: any } => {
   const working: { [key: string]: any } = {};
   for (const prop in obj) {
     switch (typeof obj[prop]) {

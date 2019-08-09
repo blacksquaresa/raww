@@ -55,7 +55,7 @@ const tslibDependencies = {
   __importDefault: __importDefault
 };
 
-export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
+export function RunAsWebWorker(...dependencies: Indexable[]): any {
   return function(
     target: any,
     propertyKey: string,
@@ -63,7 +63,9 @@ export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
   ): any {
     target[propertyKey] = raww(
       target[propertyKey],
-      ...dependencies.concat([tslibDependencies, { tslib: tslibDependencies }])
+      tslibDependencies,
+      { tslib: tslibDependencies },
+      ...dependencies
     );
     return target;
   };

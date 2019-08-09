@@ -1,12 +1,58 @@
 import { Dependency } from "./types";
 import { functionToString, getDependencyConstructor } from "./utils";
+import {
+  __extends,
+  __assign,
+  __rest,
+  __decorate,
+  __param,
+  __metadata,
+  __awaiter,
+  __generator,
+  __exportStar,
+  __values,
+  __read,
+  __spread,
+  __spreadArrays,
+  __await,
+  __asyncGenerator,
+  __asyncDelegator,
+  __asyncValues,
+  __makeTemplateObject,
+  __importStar,
+  __importDefault
+} from "tslib";
 
 export type Func<T> = (...args: any[]) => Promise<T>;
 type ResponseObject = { result?: any; error?: any };
+type Indexable = { [key: string]: any };
 
 declare var Worker: {
   prototype: Worker;
   new (stringUrl: string, options: {}): Worker;
+};
+
+const tslibDependencies = {
+  __extends: __extends,
+  __assign: __assign,
+  __rest: __rest,
+  __decorate: __decorate,
+  __param: __param,
+  __metadata: __metadata,
+  __awaiter: __awaiter,
+  __generator: __generator,
+  __exportStar: __exportStar,
+  __values: __values,
+  __read: __read,
+  __spread: __spread,
+  __spreadArrays: __spreadArrays,
+  __await: __await,
+  __asyncGenerator: __asyncGenerator,
+  __asyncDelegator: __asyncDelegator,
+  __asyncValues: __asyncValues,
+  __makeTemplateObject: __makeTemplateObject,
+  __importStar: __importStar,
+  __importDefault: __importDefault
 };
 
 export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
@@ -15,15 +61,15 @@ export function RunAsWebWorker(...dependencies: { [key: string]: any }[]): any {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ): any {
-    target[propertyKey] = raww(target[propertyKey], ...dependencies);
+    target[propertyKey] = raww(
+      target[propertyKey],
+      ...dependencies.concat([tslibDependencies, { tslib: tslibDependencies }])
+    );
     return target;
   };
 }
 
-export function raww<T>(
-  fn: Func<T>,
-  ...dependencies: { [key: string]: any }[]
-): Func<T> {
+export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
   if (fn == null || typeof fn !== "function") {
     return fn;
   }

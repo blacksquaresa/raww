@@ -8,21 +8,18 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
     return "";
   }
 
+  // prettier-ignore
   switch (typeof dependency.dependency) {
     case "string":
-      return `var ${dependency.name} = '${dependency.dependency}';`;
+      return `var ${dependency.name} = ${dependency.name}_1 = '${dependency.dependency}';`;
     case "number":
-      return `var ${dependency.name} = ${dependency.dependency};`;
+      return `var ${dependency.name} = ${dependency.name}_1 = ${dependency.dependency};`;
     case "boolean":
-      return `var ${dependency.name} = !!${dependency.dependency ? 1 : 0};`;
+      return `var ${dependency.name} = ${dependency.name}_1 = !!${dependency.dependency ? 1 : 0};`;
     case "function":
-      return `var ${dependency.name} = ${functionToString(
-        dependency.dependency
-      )};`;
+      return `var ${dependency.name} = ${dependency.name}_1 = ${functionToString(dependency.dependency)};`;
     case "object":
-      return `var ${dependency.name} = ${objectToString(
-        dependency.dependency
-      )};`;
+      return `var ${dependency.name} = ${dependency.name}_1 = ${objectToString(dependency.dependency)};`;
     default:
       return "";
   }
@@ -42,7 +39,7 @@ export const objectToString = (obj: { [key: string]: any }): string => {
   if (typeof obj === "function") {
     return functionToString(obj);
   }
-  
+
   if (typeof obj !== "object") {
     return JSON.stringify(obj);
   }
@@ -59,7 +56,9 @@ export const objectToString = (obj: { [key: string]: any }): string => {
   return result;
 };
 
-const objectFunctionMapper = (obj: { [key: string]: any; }): { [key: string]: any } => {
+const objectFunctionMapper = (obj: {
+  [key: string]: any;
+}): { [key: string]: any } => {
   const working: { [key: string]: any } = {};
   for (const prop in obj) {
     switch (typeof obj[prop]) {

@@ -1,11 +1,12 @@
 {
   "name": "run-as-web-worker",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Run pure functions as web workers",
   "main": "./lib/raww.js",
+  "module": "./esm/raww.js",
   "types": "./lib/raww.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfigesm.json",
     "test": "jest",
     "start": "webpack-dev-server --config webpack.config.js --history-api-fallback --inline --progress"
   },

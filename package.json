@@ -1,6 +1,6 @@
 {
   "name": "run-as-web-worker",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Run pure functions as web workers",
   "main": "./lib/raww.js",
   "module": "./esm/raww.js",

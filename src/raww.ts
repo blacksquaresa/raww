@@ -32,7 +32,7 @@ declare var Worker: {
   new (stringUrl: string, options: {}): Worker;
 };
 
-const tslibDependencies = {
+const tslibDependencies: Indexable = {
   __extends: __extends,
   __assign: __assign,
   __rest: __rest,
@@ -61,12 +61,7 @@ export function RunAsWebWorker(...dependencies: Indexable[]): any {
     propertyKey: string,
     descriptor: PropertyDescriptor
   ): any {
-    target[propertyKey] = raww(
-      target[propertyKey],
-      tslibDependencies,
-      { tslib: tslibDependencies },
-      ...dependencies
-    );
+    target[propertyKey] = raww(target[propertyKey], ...dependencies);
     return target;
   };
 }
@@ -76,7 +71,11 @@ export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
     return fn;
   }
 
-  const dependencyBlobs: string[] = dependencies
+  const dependencyBlobs: string[] = [
+    tslibDependencies,
+    { tslib: tslibDependencies }
+  ]
+    .concat(...dependencies)
     .reduce<Dependency[]>((arr, map) => {
       for (const entry in map) {
         arr.push({ name: entry, dependency: map[entry] });

@@ -1,5 +1,6 @@
-import { Dependency } from "./types";
+import { Dependency, Func, Indexable, ResponseObject } from "./types";
 import { functionToString, getDependencyConstructor } from "./utils";
+import { RawwMarshal } from "./marshal";
 import {
   __extends,
   __assign,
@@ -22,10 +23,6 @@ import {
   __importStar,
   __importDefault
 } from "tslib";
-
-export type Func<T> = (...args: any[]) => Promise<T>;
-type ResponseObject = { result?: any; error?: any };
-type Indexable = { [key: string]: any };
 
 declare var Worker: {
   prototype: Worker;
@@ -71,11 +68,13 @@ export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
     return fn;
   }
 
-  const dependencyBlobs: string[] = [
-    tslibDependencies,
-    { tslib: tslibDependencies }
-  ]
-    .concat(...dependencies)
+  // const dependencyBlobs: string[] = [
+  //   tslibDependencies,
+  //   { tslib: tslibDependencies }
+  // ]
+  //   .concat(...dependencies)
+
+  const dependencyBlobs: string[] = dependencies
     .reduce<Dependency[]>((arr, map) => {
       for (const entry in map) {
         arr.push({ name: entry, dependency: map[entry] });
@@ -86,58 +85,15 @@ export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
     .filter(v => v !== null)
     .map(str => str + "\r\n");
 
-  const workerCode = () => {
-    self.addEventListener(
-      "message",
-      function(e) {
-        $$$$(...e.data).then(
-          result => {
-            (self as any).postMessage({ result });
-          },
-          err => {
-            (self as any).postMessage({ error: err });
-          }
-        );
-      },
-      false
-    );
-  };
-
-  function $$$$(...data: any[]): Promise<T> {
-    // prettier-ignore
-    return (fn).call({}, ...data);
+  const renderArray = dependencyBlobs.concat(functionToString(fn));
+  const fnBlob = new Blob(renderArray, { type: "text/javascript" });
+  const uniqueName = RawwMarshal.register(fnBlob);
+  if (!uniqueName) {
+    return fn;
   }
 
-  const renderArray = dependencyBlobs.concat([
-    `${$$$$.toString().replace("fn", functionToString(fn))};`,
-    "(",
-    workerCode.toString(),
-    ")();"
-  ]);
-
-  const workerBlob = new Blob(renderArray, { type: "text/javascript" });
-
-  let worker = new Worker(window.URL.createObjectURL(workerBlob), {
-    name: fn.name
-  });
-
   let replaceFunction = (...args: any[]) => {
-    return new Promise<T>((resolve, reject) => {
-      const act = (e: MessageEvent) => {
-        worker.removeEventListener("message", act);
-        worker.removeEventListener("messageerror", err);
-        const result = e.data as ResponseObject;
-        result.result ? resolve(result.result) : reject(result.error);
-      };
-      const err = (e: Event) => {
-        worker.removeEventListener("message", act);
-        worker.removeEventListener("messageerror", err);
-        reject("an unserialisable response has been received");
-      };
-      worker.addEventListener("message", act, false);
-      worker.addEventListener("messageerror", err, false);
-      worker.postMessage(args);
-    });
+    return RawwMarshal.exec<T>(uniqueName, ...args);
   };
   return replaceFunction;
 }

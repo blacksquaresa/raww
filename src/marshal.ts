@@ -40,17 +40,16 @@ export class RawwMarshal {
       throw new Error("Oops, run out of workers");
     }
 
-    const promise = worker.exec<T>(method, ...params).then((result: T) => {
-      this.idleWorkers.push(worker);
-      return result;
-    });
-
-    if (!this.idleWorkers.length) {
-      var newWorker = this.createWorker();
-      if (newWorker) {
-        this.idleWorkers.push(newWorker);
+    const promise = worker.exec<T>(method, ...params).then(
+      (result: T) => {
+        this.idleWorkers.push(worker);
+        return result;
+      },
+      (reason: any) => {
+        this.idleWorkers.push(worker);
+        return reason;
       }
-    }
+    );
 
     return promise;
   }
@@ -59,7 +58,6 @@ export class RawwMarshal {
     const worker = new RawwWorker(`raww${this.index++}`);
     try {
       worker.prepare();
-
       this.funcRegister.forEach((blob: Blob, name: string) => {
         worker.register(name, blob);
       });

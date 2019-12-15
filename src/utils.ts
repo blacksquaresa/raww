@@ -25,6 +25,10 @@ export const getDependencyConstructor = (dependency: Dependency): string => {
   }
 };
 
+export const namedFunctionToString = (fn: Function): string => {
+  return `var $$$$ = ${functionToString(fn)}`;
+};
+
 export const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
   if (typeof fn !== "function" || !fnString || fnString.length === 0) {

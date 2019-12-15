@@ -1,5 +1,5 @@
-import { Dependency, Func, Indexable, ResponseObject } from "./types";
-import { functionToString, getDependencyConstructor } from "./utils";
+import { Dependency, Func, Indexable } from "./types";
+import { namedFunctionToString, getDependencyConstructor } from "./utils";
 import { RawwMarshal } from "./marshal";
 import {
   __extends,
@@ -68,13 +68,11 @@ export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
     return fn;
   }
 
-  // const dependencyBlobs: string[] = [
-  //   tslibDependencies,
-  //   { tslib: tslibDependencies }
-  // ]
-  //   .concat(...dependencies)
-
-  const dependencyBlobs: string[] = dependencies
+  const dependencyBlobs: string[] = [
+    tslibDependencies,
+    { tslib: tslibDependencies }
+  ]
+    .concat(...dependencies)
     .reduce<Dependency[]>((arr, map) => {
       for (const entry in map) {
         arr.push({ name: entry, dependency: map[entry] });
@@ -85,7 +83,7 @@ export function raww<T>(fn: Func<T>, ...dependencies: Indexable[]): Func<T> {
     .filter(v => v !== null)
     .map(str => str + "\r\n");
 
-  const renderArray = dependencyBlobs.concat(functionToString(fn));
+  const renderArray = dependencyBlobs.concat(namedFunctionToString(fn));
   const fnBlob = new Blob(renderArray, { type: "text/javascript" });
   const uniqueName = RawwMarshal.register(fnBlob);
   if (!uniqueName) {

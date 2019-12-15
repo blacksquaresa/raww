@@ -6,9 +6,9 @@
   "module": "./esm/raww.js",
   "types": "./lib/raww.d.ts",
   "scripts": {
-    "build": "tsc && tsc -p tsconfigesm.json",
+    "build": "tsc && tsc -p tsconfigesm.json && webpack esm/raww.js -o web/raww.js",
     "test": "jest",
-    "start": "webpack-dev-server --config webpack.config.js --history-api-fallback --inline --progress"
+    "test:cy": "cypress open"
   },
   "repository": {
     "type": "git",
@@ -23,13 +23,19 @@
     "url": "https://github.com/blacksquaresa/raww/issues"
   },
   "homepage": "https://github.com/blacksquaresa/raww#readme",
+  "dependencies": {
+    "tslib": "^1.10.0"
+  },
   "devDependencies": {
     "@types/jest": "^23.3.7",
+    "cypress": "^3.8.0",
     "jest": "^23.6.0",
     "jsdom-worker": "^0.1.0",
     "node-fetch": "^2.2.0",
     "ts-jest": "^23.10.4",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "jest": {
     "preset": "ts-jest",
@@ -38,10 +44,7 @@
       "jsdom-worker"
     ],
     "roots": [
-      "<rootDir>/test"
+      "<rootDir>/test/unit"
     ]
-  },
-  "dependencies": {
-    "tslib": "^1.10.0"
   }
 }

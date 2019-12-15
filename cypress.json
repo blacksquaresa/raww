@@ -1,0 +1,4 @@
+{
+  "integrationFolder": "test/integration/",
+  "ignoreTestFiles": "*.html"
+}

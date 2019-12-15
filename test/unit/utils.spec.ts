@@ -2,7 +2,7 @@ import {
   functionToString,
   getDependencyConstructor,
   objectToString
-} from "../src/utils";
+} from "../../src/utils";
 
 describe("#getDependencyConstructor", () => {
   it("returns correct constructor string for a string dependency", () => {

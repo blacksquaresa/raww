@@ -29,12 +29,21 @@ export const namedFunctionToString = (fn: Function): string => {
   return `var $$$$ = ${functionToString(fn)}`;
 };
 
+/**
+ * Includes matches for:
+ * function () ...
+ * function funcName() ...
+ * () => ...
+ * value => ...
+ * ([a, b] = [1, 2], {x: c} = {x: a + b}) => ...
+ */
+const includesFunctionDefinitionRegex = /^\s*(function|(\([^)]*\)\s*=>)|\w+\s*=>)/i;
 export const functionToString = (fn: Function): string => {
   const fnString = fn.toString();
   if (typeof fn !== "function" || !fnString || fnString.length === 0) {
     return "function(){}";
   }
-  return fnString.startsWith("(") || fnString.startsWith("function")
+  return includesFunctionDefinitionRegex.test(fnString)
     ? fnString
     : `function ${fnString}`;
 };

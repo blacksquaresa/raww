@@ -1,0 +1,27 @@
+<html>
+  <head></head>
+  <body>
+    <div id="result"></div>
+    <script src="../../../web/raww.js"></script>
+    <script>
+      class Container {
+        func(message) {
+          return new Promise((resolve, reject) => {
+            resolve(
+              `${message} from ${
+                WorkerGlobalScope && self instanceof WorkerGlobalScope
+                  ? `worker: ${self.name}`
+                  : "window"
+              }`
+            );
+          });
+        }
+      }
+      Container.prototype.func = raww.raww(Container.prototype.func);
+      var container = new Container();
+      container.func("Doing something").then(result => {
+        document.getElementById("result").innerHTML = result;
+      });
+    </script>
+  </body>
+</html>

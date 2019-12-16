@@ -4,7 +4,7 @@
     <div id="result"></div>
     <script src="../../../web/raww.js"></script>
     <script>
-      function func(message) {
+      var execFunc = raww.raww(message => {
         return new Promise((resolve, reject) => {
           resolve(
             `${message} from ${
@@ -14,8 +14,7 @@
             }`
           );
         });
-      }
-      var execFunc = raww.raww(func);
+      });
       execFunc("Doing something").then(result => {
         document.getElementById("result").innerHTML = result;
       });
